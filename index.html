@@ -32,6 +32,12 @@
     .checklist label{display:block;padding:8px 0;border-bottom:1px dashed var(--line)}
     .money{font-size:26px;font-weight:800}
     .small{font-size:13px}
+    .risk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+    .risk-card{border-radius:12px;padding:12px;border:1px solid var(--line)}
+    .risk-card.high{background:color-mix(in srgb,var(--bad),transparent 86%);border-color:color-mix(in srgb,var(--bad),var(--line) 40%)}
+    .risk-card.mid{background:color-mix(in srgb,var(--warn),transparent 86%);border-color:color-mix(in srgb,var(--warn),var(--line) 40%)}
+    .risk-card.low{background:color-mix(in srgb,var(--ok),transparent 88%);border-color:color-mix(in srgb,var(--ok),var(--line) 50%)}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   </style>
 </head>
 <body>
@@ -77,6 +83,22 @@
       <div>Сантехника и герметизация (средний+)</div><div class="bar"><div class="fill warn" style="width:65%"></div></div>
       <div>Косметика отделки (средний)</div><div class="bar"><div class="fill warn" style="width:55%"></div></div>
     </div>
+    <div class="legend">
+      <span class="pill bad">Высокий риск</span>
+      <span class="pill warn">Средний риск</span>
+      <span class="pill ok">Низкий риск</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Комментарии с цветовой индикацией</h2>
+    <div class="risk-grid">
+      <div class="risk-card high"><b>🔴 Критично: тёплый пол</b><br><span class="small">Без исправления этого пункта не рекомендую закрывать приёмку.</span></div>
+      <div class="risk-card high"><b>🔴 Критично: окна/СТП</b><br><span class="small">Риск долгих гарантийных доработок. Нужен акт по каждой створке и стеклопакету.</span></div>
+      <div class="risk-card mid"><b>🟠 Средний: сантехника</b><br><span class="small">Обратный клапан и герметизация ванны обязательно довести до нормы.</span></div>
+      <div class="risk-card mid"><b>🟠 Средний: отделка</b><br><span class="small">Трещины/наплывы/сколы — исправляемо, но важно проверить качество повторно.</span></div>
+      <div class="risk-card low"><b>🟢 Позитив</b><br><span class="small">Дефекты типовые для новостроек и в целом устранимы при грамотной фиксации.</span></div>
+    </div>
   </section>
 
   <section class="card">
@@ -107,12 +129,14 @@
   </section>
 </div>
 <script>
+const savedTheme=localStorage.getItem('report_theme');
+if(savedTheme){document.documentElement.dataset.theme=savedTheme;}
 const txt=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
 new Chart(document.getElementById('riskChart'),{type:'bar',data:{labels:['Критичные','Средние','Косметика'],datasets:[{data:[5,9,5],backgroundColor:['#ef4444','#f59e0b','#22c55e']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:txt}},x:{ticks:{color:txt}}}}});
 new Chart(document.getElementById('zoneChart'),{type:'doughnut',data:{labels:['Инженерия','Окна','Отделка','Сантехника'],datasets:[{data:[2,5,9,3],backgroundColor:['#ef4444','#f97316','#60a5fa','#34d399']}]},options:{plugins:{legend:{labels:{color:txt}}}}});
 const checks=[...document.querySelectorAll('#checks input')],done=document.getElementById('done');
 checks.forEach(c=>c.addEventListener('change',()=>done.textContent=checks.filter(x=>x.checked).length));
-document.getElementById('themeBtn').addEventListener('click',()=>{const html=document.documentElement;html.dataset.theme=html.dataset.theme==='dark'?'light':'dark';location.reload();});
+document.getElementById('themeBtn').addEventListener('click',()=>{const html=document.documentElement;const next=html.dataset.theme==='dark'?'light':'dark';html.dataset.theme=next;localStorage.setItem('report_theme',next);});
 </script>
 </body>
 </html>
