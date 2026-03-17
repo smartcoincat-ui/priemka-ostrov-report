@@ -16,6 +16,22 @@
     h1,h2,h3{margin:.2em 0}.small{font-size:13px}
     .topic{padding:10px;border-left:4px solid var(--accent);background:color-mix(in srgb,var(--card),#000 2%);border-radius:10px;margin-bottom:8px}
     ul{margin:.4em 0 .2em 1em;line-height:1.45}
+    .calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:10px}
+    .day{border:1px solid var(--line);border-radius:10px;min-height:76px;padding:6px;font-size:12px;background:var(--card)}
+    .day .d{font-weight:700;opacity:.9}
+    .day.empty{opacity:.35}
+    .lvl-0{background:color-mix(in srgb,var(--card),#000 3%)}
+    .lvl-1{background:color-mix(in srgb,#22c55e,transparent 88%)}
+    .lvl-2{background:color-mix(in srgb,#f59e0b,transparent 84%)}
+    .lvl-3{background:color-mix(in srgb,#ef4444,transparent 82%)}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+    .dot{width:10px;height:10px;border-radius:99px;display:inline-block}
+    .bar{height:10px;background:var(--line);border-radius:999px;overflow:hidden}
+    .bar > span{display:block;height:100%;background:linear-gradient(90deg,#60a5fa,#2563eb);animation:grow 1s ease}
+    @keyframes grow{from{width:0}to{width:var(--w)}}
+    .pulse{animation:pulse 1.8s infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(245,158,11,.35)}70%{box-shadow:0 0 0 10px rgba(245,158,11,0)}100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}}
   </style>
 </head>
 <body>
@@ -40,6 +56,50 @@
   <section class="card grid">
     <div><h3>Эмоции по дням</h3><canvas id="emoChart"></canvas></div>
     <div><h3>Темы общения</h3><canvas id="topicsChart"></canvas></div>
+  </section>
+
+  <section class="card grid">
+    <div>
+      <h2>Календарь событий (март 2026)</h2>
+      <div class="small muted">Нажми на день — справа покажутся события/наблюдения.</div>
+      <div class="calendar" id="cal"></div>
+      <div class="legend">
+        <div class="lg"><span class="dot" style="background:#22c55e"></span>Стабильно</div>
+        <div class="lg"><span class="dot" style="background:#f59e0b"></span>Нужно внимание</div>
+        <div class="lg"><span class="dot" style="background:#ef4444"></span>Риск/напряжение</div>
+      </div>
+    </div>
+    <div>
+      <h3>События выбранного дня</h3>
+      <div id="dayDetails" class="small">Выбери дату в календаре.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Общий дашборд: ключевые аспекты и зоны внимания</h2>
+    <div class="grid">
+      <div>
+        <div class="small muted">Эмоциональная стабильность</div>
+        <div class="bar"><span style="--w:78%;width:78%"></span></div>
+      </div>
+      <div>
+        <div class="small muted">Готовность к диалогу</div>
+        <div class="bar"><span style="--w:84%;width:84%"></span></div>
+      </div>
+      <div>
+        <div class="small muted">Учебный фокус</div>
+        <div class="bar"><span style="--w:62%;width:62%"></span></div>
+      </div>
+      <div>
+        <div class="small muted">Риск избегания при давлении</div>
+        <div class="bar pulse"><span style="--w:58%;width:58%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></span></div>
+      </div>
+    </div>
+    <ul>
+      <li><b>Основные параметры:</b> контакт, эмоциональный фон, учебная вовлечённость, реакция на нагрузку, качество сна.</li>
+      <li><b>Цветовая индикация:</b> зелёный — норма, жёлтый — наблюдать, красный — нужна быстрая корректировка подхода.</li>
+      <li><b>Зона внимания на сейчас:</b> удерживать мягкую структуру и не перегружать длинными однотипными задачами.</li>
+    </ul>
   </section>
 
   <section class="card">
@@ -117,5 +177,40 @@ document.getElementById('themeBtn').onclick=()=>{const h=document.documentElemen
 const txt=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
 new Chart(document.getElementById('emoChart'),{type:'line',data:{labels:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],datasets:[{label:'Спокойствие',data:[6,7,7,6,7,8,7],borderColor:'#22c55e',tension:.35},{label:'Тревожность',data:[5,4,4,5,4,3,4],borderColor:'#ef4444',tension:.35}]},options:{plugins:{legend:{labels:{color:txt}}},scales:{x:{ticks:{color:txt}},y:{ticks:{color:txt},beginAtZero:true,max:10}}}});
 new Chart(document.getElementById('topicsChart'),{type:'doughnut',data:{labels:['Учёба','Эмоции/страхи','Лайфстайл','Творчество'],datasets:[{data:[35,30,20,15],backgroundColor:['#3b82f6','#f59e0b','#22c55e','#a855f7']}]},options:{plugins:{legend:{labels:{color:txt}}}}});
+
+const events={
+  '2026-03-10':{lvl:1,notes:['Поддерживающий контакт','Сохранён позитивный тон','Короткая вечерняя сверка']},
+  '2026-03-11':{lvl:2,notes:['Снижение учебного фокуса','Нужны микро-цели и паузы']},
+  '2026-03-12':{lvl:1,notes:['Диалог стабилен','Тревожность умеренная']},
+  '2026-03-13':{lvl:2,notes:['Признаки утомления','Важно не давить']},
+  '2026-03-14':{lvl:1,notes:['Контакт ровный','Лучше реагирует на мягкий формат']},
+  '2026-03-15':{lvl:0,notes:['Спокойный день без значимых сигналов']},
+  '2026-03-16':{lvl:2,notes:['Нужна поддержка режима сна','Фокус плавает']},
+  '2026-03-17':{lvl:1,notes:['Эпизодический контакт','Фон ровный','План: check-in + микроцель на завтра']}
+};
+
+(function renderCal(){
+  const y=2026,m=2; // March
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const cal=document.getElementById('cal');
+  const details=document.getElementById('dayDetails');
+  const shift=(first+6)%7;
+  for(let i=0;i<shift;i++){
+    const e=document.createElement('div');e.className='day empty';cal.appendChild(e);
+  }
+  for(let d=1;d<=days;d++){
+    const key=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const ev=events[key];
+    const cell=document.createElement('button');
+    cell.className=`day lvl-${ev?ev.lvl:0}`;
+    cell.innerHTML=`<div class='d'>${d}</div><div class='small muted'>${ev?ev.notes[0]:'—'}</div>`;
+    cell.onclick=()=>{
+      const list=ev?`<ul>${ev.notes.map(n=>`<li>${n}</li>`).join('')}</ul>`:'<div class="muted">Нет зафиксированных событий.</div>';
+      details.innerHTML=`<b>${d}.${String(m+1).padStart(2,'0')}.${y}</b>${list}`;
+    };
+    cal.appendChild(cell);
+  }
+})();
 </script>
 </body></html>
