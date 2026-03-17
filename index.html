@@ -1,93 +1,118 @@
 <!doctype html>
-<html lang="ru">
+<html lang="ru" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ЖК Остров, кв.117 — аналитический отчёт по покупке</title>
+  <title>ЖК Остров, кв.117 — отчёт по покупке</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root{--bg:#0f172a;--card:#111827;--muted:#94a3b8;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--text:#e5e7eb}
-    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(120deg,#020617,#0f172a);color:var(--text)}
-    .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
-    .hero,.card{background:rgba(17,24,39,.88);border:1px solid #243247;border-radius:16px;padding:18px;margin-bottom:16px}
-    h1,h2{margin:.2em 0}.muted{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
-    .kpi{padding:12px;border-radius:12px;background:#0b1220;border:1px solid #243247}
-    .pill{padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700}
-    .ok{background:#052e16;color:#86efac}.warn{background:#3b2305;color:#fcd34d}.bad{background:#3a0b0b;color:#fca5a5}
-    ul{line-height:1.5} .checklist label{display:block;padding:6px 0;border-bottom:1px dashed #243247}
-    a{color:#93c5fd}
+    :root{
+      --bg:#0b1220;--bg2:#111827;--card:#0f172a;--text:#e5e7eb;--muted:#94a3b8;
+      --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--line:#253247;--accent:#60a5fa;
+    }
+    html[data-theme='light']{
+      --bg:#f4f7fb;--bg2:#e9eef7;--card:#ffffff;--text:#111827;--muted:#4b5563;
+      --line:#d1d9e6;--accent:#2563eb;
+    }
+    body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(130deg,var(--bg),var(--bg2));color:var(--text)}
+    .wrap{max-width:1160px;margin:20px auto;padding:0 16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+    .hero{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    h1,h2,h3{margin:.2em 0}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+    .kpi{background:color-mix(in srgb,var(--card),#000 8%);border:1px solid var(--line);border-radius:12px;padding:12px}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700}
+    .ok{background:#06351a;color:#98f5b8}.warn{background:#4a2d07;color:#ffd27a}.bad{background:#4a0f12;color:#ffb4ba}
+    .btn{border:1px solid var(--line);background:transparent;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
+    .bars{display:grid;gap:8px}
+    .bar{height:10px;background:#1f2937;border-radius:999px;overflow:hidden}
+    .fill{height:100%}
+    .fill.bad{background:var(--bad)} .fill.warn{background:var(--warn)} .fill.ok{background:var(--ok)}
+    .checklist label{display:block;padding:8px 0;border-bottom:1px dashed var(--line)}
+    .money{font-size:26px;font-weight:800}
+    .small{font-size:13px}
   </style>
 </head>
 <body>
 <div class="wrap">
-  <section class="hero">
-    <h1>ЖК Остров, кв.117 — отчёт по рискам покупки</h1>
-    <div class="muted">Источник: priemka-pro.ru/report/IYNW9P • Дата осмотра: 17.03.2026 • Эксперт: Суворов И.А.</div>
-    <p><span class="pill warn">Итог: покупать можно</span> <b>только при условии устранения критичных дефектов</b> до подписания финальных документов/платежей либо с компенсацией.</p>
+  <section class="card hero">
+    <div>
+      <h1>ЖК Остров, кв.117 — расширенный отчёт</h1>
+      <div class="muted">Источник: priemka-pro.ru/report/IYNW9P • Осмотр: 17.03.2026</div>
+      <p><span class="pill warn">Решение: условная покупка</span> Принимать объект только после закрытия критичных пунктов либо при финансовой компенсации.</p>
+    </div>
+    <button class="btn" id="themeBtn">🌙 / ☀️ Тема</button>
   </section>
 
   <section class="grid">
-    <div class="kpi"><div class="muted">Всего зафиксировано</div><h2>19 дефектов</h2></div>
-    <div class="kpi"><div class="muted">Критичные</div><h2 style="color:#fca5a5">5</h2></div>
-    <div class="kpi"><div class="muted">Средние</div><h2 style="color:#fcd34d">9</h2></div>
-    <div class="kpi"><div class="muted">Косметические</div><h2 style="color:#86efac">5</h2></div>
+    <div class="kpi"><div class="muted">Всего дефектов</div><div class="money">19</div></div>
+    <div class="kpi"><div class="muted">Критичные</div><div class="money" style="color:var(--bad)">5</div></div>
+    <div class="kpi"><div class="muted">Средние</div><div class="money" style="color:var(--warn)">9</div></div>
+    <div class="kpi"><div class="muted">Косметические</div><div class="money" style="color:var(--ok)">5</div></div>
   </section>
 
   <section class="card grid">
-    <div><canvas id="riskChart"></canvas></div>
-    <div><canvas id="zoneChart"></canvas></div>
+    <div><h3>Распределение рисков</h3><canvas id="riskChart"></canvas></div>
+    <div><h3>Зоны проблем</h3><canvas id="zoneChart"></canvas></div>
   </section>
 
   <section class="card">
-    <h2>Комментарии по квартире как предмету покупки</h2>
-    <ul>
-      <li><span class="pill bad">Критично</span> Не работает тёплый пол (коридор + санузел): это инженерный дефект, не «косметика».</li>
-      <li><span class="pill bad">Критично</span> Окна: пороки стеклопакетов + створки задевают рамы. Риск затяжных гарантийных работ.</li>
-      <li><span class="pill warn">Средне</span> Трещины примыканий откосов, дефекты покраски и пола — массовая отделка «на скорость».</li>
-      <li><span class="pill warn">Средне</span> Сантехника: нет обратного клапана, герметизация ванны некачественная.</li>
-      <li><span class="pill ok">Позитив</span> Дефекты типовые для новостройки, в большинстве случаев устранимы по гарантии.</li>
-    </ul>
-  </section>
-
-  <section class="card">
-    <h2>Интерактивный чеклист must-fix (до приёмки)</h2>
-    <div class="checklist" id="checks">
-      <label><input type="checkbox"> Проверка и запуск тёплого пола в коридоре (акт/видео фиксация).</label>
-      <label><input type="checkbox"> Проверка и запуск тёплого пола в санузле 1 (акт/видео фиксация).</label>
-      <label><input type="checkbox"> Устранить дефекты стеклопакетов (брак/окалины) в комнате 2 и кухне.</label>
-      <label><input type="checkbox"> Отрегулировать створки, чтобы не задевали рамы (кабинет, кухня).</label>
-      <label><input type="checkbox"> Установить обратный клапан на гигиеническом душе.</label>
-      <label><input type="checkbox"> Переделать герметизацию ванны (без щелей/разрывов).</label>
-      <label><input type="checkbox"> Закрыть трещины примыканий откосов и трещины откосов на кухне.</label>
-      <label><input type="checkbox"> Устранить сколы плитки в санузлах.</label>
-      <label><input type="checkbox"> Устранить повреждения ламината/паркета (комнаты/кухня).</label>
-      <label><input type="checkbox"> Перекрасить зоны с наплывами/отслоениями над радиаторами.</label>
+    <h2>Финансовый торг (оценка компенсации)</h2>
+    <p class="muted">Ориентир для переговоров с застройщиком при отказе быстро устранить дефекты.</p>
+    <div class="grid">
+      <div class="kpi"><div class="small muted">Инженерия (тёплые полы)</div><b>40 000 – 90 000 ₽</b></div>
+      <div class="kpi"><div class="small muted">Окна/стеклопакеты/регулировка</div><b>70 000 – 180 000 ₽</b></div>
+      <div class="kpi"><div class="small muted">Отделка (полы/стены/откосы/плитка)</div><b>50 000 – 140 000 ₽</b></div>
+      <div class="kpi"><div class="small muted">Сантехника/герметизация</div><b>10 000 – 35 000 ₽</b></div>
     </div>
-    <p class="muted">Прогресс: <span id="done">0</span>/10</p>
+    <p><span class="pill bad">Итого ориентир торга:</span> <b>170 000 – 445 000 ₽</b> (или эквивалентное устранение до подписания).</p>
   </section>
 
   <section class="card">
-    <h2>Рекомендованная стратегия сделки</h2>
+    <h2>Приоритеты внимания (визуально)</h2>
+    <div class="bars">
+      <div>Инженерия (критично)</div><div class="bar"><div class="fill bad" style="width:90%"></div></div>
+      <div>Окна и стеклопакеты (высокий)</div><div class="bar"><div class="fill bad" style="width:85%"></div></div>
+      <div>Сантехника и герметизация (средний+)</div><div class="bar"><div class="fill warn" style="width:65%"></div></div>
+      <div>Косметика отделки (средний)</div><div class="bar"><div class="fill warn" style="width:55%"></div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Интерактивный чеклист Must-Fix (до финальной приёмки)</h2>
+    <div class="checklist" id="checks">
+      <label><input type="checkbox"> 1. Полностью восстановить тёплый пол в коридоре (тест + акт).</label>
+      <label><input type="checkbox"> 2. Полностью восстановить тёплый пол в санузле 1 (тест + акт).</label>
+      <label><input type="checkbox"> 3. Устранить пороки/брак стеклопакетов (комната 2, кухня).</label>
+      <label><input type="checkbox"> 4. Устранить задевание створок окон (кабинет, кухня).</label>
+      <label><input type="checkbox"> 5. Установить обратный клапан на гигиеническом душе.</label>
+      <label><input type="checkbox"> 6. Полная повторная герметизация ванны.</label>
+      <label><input type="checkbox"> 7. Заделка трещин примыканий откосов и проверка примыканий.</label>
+      <label><input type="checkbox"> 8. Замена/ремонт сколотой плитки в санузлах.</label>
+      <label><input type="checkbox"> 9. Устранить повреждения напольных покрытий.</label>
+      <label><input type="checkbox"> 10. Перекрасить зоны с наплывами/отслоениями над радиаторами.</label>
+      <label><input type="checkbox"> 11. Повторный осмотр независимым специалистом + фотофиксация.</label>
+    </div>
+    <p class="muted">Прогресс: <b><span id="done">0</span>/11</b></p>
+  </section>
+
+  <section class="card">
+    <h2>Тактика переговоров (коротко)</h2>
     <ol>
-      <li>Подписывать только дефектную ведомость с полным перечнем (уже есть база).</li>
-      <li>Требовать официальный график устранения + ответственного инженера.</li>
-      <li>Повторная приёмка только после закрытия <b>инженерии + окон + сантехники</b>.</li>
-      <li>Если сроки срываются — фиксировать компенсацию/скидку либо удержание части суммы.</li>
+      <li>Сначала требовать устранение критичных дефектов в срок по актам.</li>
+      <li>Если сроки срываются — перейти к финансовой компенсации из диапазона выше.</li>
+      <li>Не подписывать финальные документы, пока не закрыты пункты 1–6 чеклиста.</li>
     </ol>
-  </section>
-
-  <section class="card">
-    <h2>Сводная оценка</h2>
-    <p><span class="pill warn">Риск: средний</span> Квартира годится к покупке, но на текущем состоянии без устранения критичных пунктов входить в финальный этап сделки не рекомендуется.</p>
   </section>
 </div>
 <script>
-new Chart(document.getElementById('riskChart'),{type:'bar',data:{labels:['Критичные','Средние','Косметические'],datasets:[{data:[5,9,5],backgroundColor:['#ef4444','#f59e0b','#22c55e']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
-new Chart(document.getElementById('zoneChart'),{type:'doughnut',data:{labels:['Инженерия','Окна','Отделка','Сантехника'],datasets:[{data:[2,5,9,3],backgroundColor:['#ef4444','#f59e0b','#60a5fa','#34d399']}]},options:{plugins:{legend:{labels:{color:'#e5e7eb'}}}}});
-const checks=[...document.querySelectorAll('#checks input')];
-const done=document.getElementById('done');
+const txt=getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+new Chart(document.getElementById('riskChart'),{type:'bar',data:{labels:['Критичные','Средние','Косметика'],datasets:[{data:[5,9,5],backgroundColor:['#ef4444','#f59e0b','#22c55e']}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:txt}},x:{ticks:{color:txt}}}}});
+new Chart(document.getElementById('zoneChart'),{type:'doughnut',data:{labels:['Инженерия','Окна','Отделка','Сантехника'],datasets:[{data:[2,5,9,3],backgroundColor:['#ef4444','#f97316','#60a5fa','#34d399']}]},options:{plugins:{legend:{labels:{color:txt}}}}});
+const checks=[...document.querySelectorAll('#checks input')],done=document.getElementById('done');
 checks.forEach(c=>c.addEventListener('change',()=>done.textContent=checks.filter(x=>x.checked).length));
+document.getElementById('themeBtn').addEventListener('click',()=>{const html=document.documentElement;html.dataset.theme=html.dataset.theme==='dark'?'light':'dark';location.reload();});
 </script>
 </body>
 </html>
