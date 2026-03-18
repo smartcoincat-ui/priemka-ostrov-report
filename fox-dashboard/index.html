@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FOX Family Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#070b14;--bg2:#0f1830;--card:rgba(255,255,255,.08);--line:rgba(255,255,255,.16);--text:#eaf2ff;--muted:#9db0d3;--acc:#5ea2ff;--ok:#22c55e;--warn:#f59e0b}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial;color:var(--text);background:radial-gradient(1000px 600px at 20% 10%,#1a2a4d 0%,transparent 60%),radial-gradient(900px 500px at 95% 85%,#1b2a3a 0%,transparent 55%),linear-gradient(120deg,var(--bg),var(--bg2));min-height:100vh}
+    .gridbg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:28px 28px;opacity:.45;pointer-events:none}
+    .wrap{max-width:1280px;margin:16px auto;padding:0 12px;position:relative;z-index:2}
+    .glass{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .top{padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .title{font-size:clamp(22px,3vw,36px);font-weight:900}
+    .sub{color:var(--muted)}
+    .menu{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);text-decoration:none}
+    .layout{display:grid;grid-template-columns:repeat(12,1fr);gap:10px;margin-top:10px}
+    .card{padding:12px}
+    .kpi{grid-column:span 3}.kpi .v{font-size:30px;font-weight:900}.muted{color:var(--muted)}
+    .span8{grid-column:span 8}.span4{grid-column:span 4}.span6{grid-column:span 6}.span12{grid-column:span 12}
+    .row{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03);margin-top:8px}
+    .bar{height:9px;background:rgba(255,255,255,.14);border-radius:999px;overflow:hidden;margin-top:4px}.bar>span{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,#5ea2ff,#7c3aed)}
+    .fox{width:110px;height:110px;position:relative;animation:float 3s ease-in-out infinite}
+    .fox svg{filter:drop-shadow(0 8px 20px rgba(255,157,66,.35))}
+    @keyframes float{50%{transform:translateY(-6px)}}
+    .pulse{position:relative}.pulse:after{content:"";position:absolute;inset:-1px;border-radius:16px;box-shadow:0 0 0 0 rgba(94,162,255,.35);animation:pulse 2s infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,162,255,.35)}70%{box-shadow:0 0 0 14px rgba(94,162,255,0)}100%{box-shadow:0 0 0 0 rgba(94,162,255,0)}}
+    @media(max-width:980px){.kpi{grid-column:span 6}.span8,.span4,.span6{grid-column:span 12}}
+    @media(max-width:560px){.kpi{grid-column:span 12}}
+  </style>
+</head>
+<body>
+<div class="gridbg"></div>
+<div class="wrap">
+  <section class="glass top">
+    <div>
+      <div class="title">🦊 FOX Family Dashboard</div>
+      <div class="sub">Отдельный общий пульт задач, планов и семейных статусов в реальном времени</div>
+    </div>
+    <div class="menu">
+      <a class="btn" href="../interaction-diary/">📔 Дневник взаимодействия</a>
+      <a class="btn" href="../yan-diary/">👶 Дневник Яна</a>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div class="glass card kpi"><div class="muted">Активные задачи</div><div class="v">6</div></div>
+    <div class="glass card kpi"><div class="muted">Выполнено сегодня</div><div class="v">14</div></div>
+    <div class="glass card kpi"><div class="muted">Семейные поручения</div><div class="v">4</div></div>
+    <div class="glass card kpi"><div class="muted">Онлайн статус</div><div class="v" id="clock">LIVE</div></div>
+
+    <div class="glass card span8 pulse">
+      <h3 style="margin:.2em 0">📊 Процессы и динамика</h3>
+      <canvas id="line" style="max-height:280px"></canvas>
+    </div>
+    <div class="glass card span4">
+      <h3 style="margin:.2em 0">🦊 FOX Core</h3>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="fox">
+          <svg viewBox="0 0 120 120" width="110" height="110" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="#ff9d42"/>
+            <polygon points="24,28 40,8 48,34" fill="#ff9d42"/>
+            <polygon points="96,28 80,8 72,34" fill="#ff9d42"/>
+            <circle cx="45" cy="56" r="5" fill="#1f2937"/>
+            <circle cx="75" cy="56" r="5" fill="#1f2937"/>
+            <ellipse cx="60" cy="74" rx="20" ry="14" fill="#fff2e0"/>
+            <circle cx="60" cy="72" r="4" fill="#1f2937"/>
+          </svg>
+        </div>
+        <div>
+          <div class="muted">Режим</div><b>Семейный мониторинг</b>
+          <div class="muted" style="margin-top:6px">Текущая сессия активна</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass card span6">
+      <h3 style="margin:.2em 0">🧭 Текущие задачи</h3>
+      <div class="row"><span>Мониторинг Даши</span><small>ожидание ответа</small></div>
+      <div class="row"><span>Поездка А.В. на завтра</span><small>контроль окна</small></div>
+      <div class="row"><span>Фото для Новикова</span><small>подготовка</small></div>
+      <div class="row"><span>Учёт водителя</span><small>баланс активен</small></div>
+    </div>
+
+    <div class="glass card span6">
+      <h3 style="margin:.2em 0">✅ Выполнено</h3>
+      <div class="row"><span>Утренний дайджест 09:00</span><small>отправлен</small></div>
+      <div class="row"><span>Инструкции Matrix семье</span><small>отправлены</small></div>
+      <div class="row"><span>Дневник взаимодействия V2</span><small>опубликован</small></div>
+      <div class="row"><span>Голосовой канал FOX</span><small>настроен</small></div>
+    </div>
+
+    <div class="glass card span12">
+      <h3 style="margin:.2em 0">📌 Ключевые семейные данные</h3>
+      <div class="row"><span>❄️ Кондиционеры (Новиков)</span><small>novikov_al@rusklimat.ru • ждёт фото точек монтажа</small></div>
+      <div class="row"><span>🚕 Водитель</span><small>Аванс 2000 ₽ • 250 ₽/поездка • ведётся остаток</small></div>
+      <div class="row"><span>💙 Анастасия Васильевна</span><small>отправлено голосовое, контроль самочувствия</small></div>
+      <div class="row"><span>📔 Дневник взаимодействия</span><small>доступен как отдельный раздел меню</small></div>
+    </div>
+  </section>
+</div>
+<script>
+new Chart(document.getElementById('line'),{type:'line',data:{labels:['09:00','10:00','11:00','12:00','13:00','14:00'],datasets:[{label:'Активные',data:[4,5,6,5,6,6],borderColor:'#5ea2ff',tension:.35},{label:'Выполненные',data:[3,6,8,10,12,14],borderColor:'#22c55e',tension:.35}]},options:{plugins:{legend:{labels:{color:'#cfe0ff'}}},scales:{x:{ticks:{color:'#9db0d3'}},y:{ticks:{color:'#9db0d3'}}}}});
+function t(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}t();setInterval(t,1000);
+</script>
+</body>
+</html>
