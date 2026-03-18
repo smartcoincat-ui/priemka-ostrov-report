@@ -9,12 +9,20 @@
     :root{
       --bg:#f3f6fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe4f0;
       --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--accent:#2563eb;
+      --fontScale:1;
     }
-    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
+    html[data-theme='dark']{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#94a3b8;--line:#233147;--accent:#60a5fa}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text);font-size:calc(16px * var(--fontScale))}
     .wrap{max-width:1180px;margin:16px auto;padding:0 12px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(15,23,42,.04)}
     .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:600}
+    .btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:600}
+    .settings{position:fixed;right:14px;bottom:14px;z-index:30}
+    .settings-panel{position:fixed;right:14px;bottom:64px;z-index:35;min-width:260px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
+    .settings-panel.hide{display:none}
+    .settings-panel label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
+    .settings-panel select{width:100%;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text)}
     .tabs{display:flex;gap:8px;overflow:auto}
     .tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;white-space:nowrap}
     .tab.active{background:#eaf1ff;border-color:#b8ccff;color:#1d4ed8;font-weight:700}
@@ -36,6 +44,7 @@
     .entry{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
     .summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
     .summary .item{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}
+    h1{font-size:clamp(20px,2.8vw,32px)} h2{font-size:clamp(18px,2.2vw,26px)} h3{font-size:clamp(16px,1.8vw,20px)}
     @media (max-width: 920px){
       .kpi{grid-column:span 6}
       .panel{grid-column:span 12}
@@ -45,6 +54,10 @@
       .kpi{grid-column:span 12}
       .wrap{padding:0 8px}
       .card{padding:10px}
+      body{font-size:calc(14px * var(--fontScale))}
+      .tabs{gap:6px}
+      .tab{padding:7px 10px;font-size:13px}
+      .btn{padding:7px 10px;font-size:13px}
     }
   </style>
 </head>
@@ -139,6 +152,24 @@
   </section>
 </div>
 
+<div class="settings">
+  <button class="btn" id="settingsBtn">⚙️ Настройки</button>
+</div>
+<div class="settings-panel hide" id="settingsPanel">
+  <label for="themeSelect">Тема</label>
+  <select id="themeSelect">
+    <option value="auto">Авто (система)</option>
+    <option value="light">Светлая</option>
+    <option value="dark">Тёмная</option>
+  </select>
+  <label for="fontSelect">Размер шрифта</label>
+  <select id="fontSelect">
+    <option value="0.92">Компактный</option>
+    <option value="1" selected>Стандарт</option>
+    <option value="1.08">Крупнее</option>
+  </select>
+</div>
+
 <script>
 const tabs=[...document.querySelectorAll('.tab')];
 const views=[...document.querySelectorAll('.view')];
@@ -154,6 +185,31 @@ for(let i=1;i<=31;i++){
   const d=document.createElement('div'); d.className='d '+(lv[i]?('lvl'+lv[i]):'');
   d.innerHTML=`<b>${i}</b><br><span class='muted'>${lv[i]?('уровень '+lv[i]):'—'}</span>`;
   cal.appendChild(d);
+}
+
+const settingsBtn=document.getElementById('settingsBtn');
+const settingsPanel=document.getElementById('settingsPanel');
+const themeSelect=document.getElementById('themeSelect');
+const fontSelect=document.getElementById('fontSelect');
+settingsBtn.onclick=()=>settingsPanel.classList.toggle('hide');
+
+const savedTheme=localStorage.getItem('diaryTheme')||'auto';
+const savedScale=localStorage.getItem('diaryScale')||'1';
+themeSelect.value=savedTheme;
+fontSelect.value=savedScale;
+applyTheme(savedTheme);
+document.documentElement.style.setProperty('--fontScale',savedScale);
+
+themeSelect.onchange=(e)=>{localStorage.setItem('diaryTheme',e.target.value);applyTheme(e.target.value)};
+fontSelect.onchange=(e)=>{localStorage.setItem('diaryScale',e.target.value);document.documentElement.style.setProperty('--fontScale',e.target.value)};
+
+function applyTheme(mode){
+  if(mode==='auto'){
+    const dark=window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.dataset.theme=dark?'dark':'light';
+  }else{
+    document.documentElement.dataset.theme=mode;
+  }
 }
 </script>
 </body>
