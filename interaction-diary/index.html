@@ -6,63 +6,122 @@
   <title>📔 Дневник взаимодействия</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root{--bg:#f4f7fb;--card:#fff;--text:#111827;--muted:#667085;--line:#dce4f0;--accent:#2563eb}
+    :root{
+      --bg:#f3f6fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe4f0;
+      --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--accent:#2563eb;
+    }
     *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
-    .wrap{max-width:1100px;margin:18px auto;padding:0 12px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-    .muted{color:var(--muted)} .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer}
-    .tabs{display:flex;gap:8px;margin:10px 0}.tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff}
+    .wrap{max-width:1180px;margin:16px auto;padding:0 12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 4px 20px rgba(15,23,42,.04)}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:600}
+    .tabs{display:flex;gap:8px;overflow:auto}
+    .tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;white-space:nowrap}
     .tab.active{background:#eaf1ff;border-color:#b8ccff;color:#1d4ed8;font-weight:700}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-    .kpi{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+    .kpi{grid-column:span 3;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+    .kpi .v{font-size:26px;font-weight:800;margin-top:4px}
+    .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+    .ok{background:#eafaf0;color:#166534}.warn{background:#fff6e8;color:#92400e}.bad{background:#ffeaea;color:#991b1b}
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
+    .panel{grid-column:span 6}
     .hide{display:none}
+    .muted{color:var(--muted)}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .lg{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
     .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .d{min-height:66px;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:12px}
+    .d{min-height:74px;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:12px;background:#fff}
     .lvl1{background:#ecfdf3}.lvl2{background:#fff7e8}.lvl3{background:#fff1f2}
     .entry{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
-    h1,h2,h3{margin:.2em 0}
+    .summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+    .summary .item{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}
+    @media (max-width: 920px){
+      .kpi{grid-column:span 6}
+      .panel{grid-column:span 12}
+      .summary{grid-template-columns:1fr}
+    }
+    @media (max-width: 520px){
+      .kpi{grid-column:span 12}
+      .wrap{padding:0 8px}
+      .card{padding:10px}
+    }
   </style>
 </head>
 <body>
 <div class="wrap">
   <section class="card top">
     <div>
-      <h1>📔 Дневник взаимодействия</h1>
-      <div class="muted">Ребёнок • интерактивный формат: дашборд, календарь, записи, сводка</div>
+      <h1 style="margin:.2em 0">📔 Дневник взаимодействия</h1>
+      <div class="muted">Современный дашборд: цветовые маркеры, аналитика, мобильная версия</div>
     </div>
     <button class="btn">+ Запись</button>
   </section>
 
-  <div class="tabs card" style="padding:8px">
+  <section class="card tabs">
     <button class="tab active" data-tab="dashboard">Дашборд</button>
     <button class="tab" data-tab="calendar">Календарь</button>
     <button class="tab" data-tab="entries">Записи</button>
-  </div>
+  </section>
 
   <section id="dashboard" class="view">
     <div class="grid card">
-      <div class="kpi"><div class="muted">Эмоц. стабильность</div><h2 id="kpiStable">6.1</h2></div>
-      <div class="kpi"><div class="muted">Контактность</div><h2 id="kpiContact">86%</h2></div>
-      <div class="kpi"><div class="muted">Вовлечённость</div><h2 id="kpiInvolve">5.5</h2></div>
-      <div class="kpi"><div class="muted">Уровень риска</div><h2 id="kpiRisk">Средний</h2></div>
-    </div>
-    <div class="grid card">
-      <div><h3>Динамика за 7 дней</h3><canvas id="lineChart"></canvas></div>
-      <div><h3>Темы общения</h3><canvas id="barChart"></canvas></div>
-    </div>
-    <div class="grid card">
-      <div>
-        <h3>✅ Что улучшилось</h3>
-        <ul><li>Настроение стало ровнее</li><li>Контакт длился дольше обычного</li></ul>
+      <div class="kpi">
+        <div class="muted">Эмоц. стабильность</div>
+        <div class="v">6.4</div>
+        <span class="status warn"><span class="dot warn"></span>Нужен контроль</span>
       </div>
-      <div>
-        <h3>⚠️ Где просадка</h3>
-        <ul><li>Утомляемость к вечеру</li></ul>
+      <div class="kpi">
+        <div class="muted">Контактность</div>
+        <div class="v">89%</div>
+        <span class="status ok"><span class="dot ok"></span>Хорошо</span>
       </div>
-      <div>
-        <h3>📋 Что важно завтра</h3>
-        <ul><li>Короткий check-in утром</li><li>1 микро-цель по учёбе</li></ul>
+      <div class="kpi">
+        <div class="muted">Вовлечённость</div>
+        <div class="v">5.9</div>
+        <span class="status warn"><span class="dot warn"></span>Средне</span>
+      </div>
+      <div class="kpi">
+        <div class="muted">Уровень риска</div>
+        <div class="v">Средний</div>
+        <span class="status warn"><span class="dot warn"></span>Без эскалации</span>
+      </div>
+
+      <div class="panel">
+        <h3>Динамика за 7 дней</h3>
+        <canvas id="lineChart"></canvas>
+      </div>
+      <div class="panel">
+        <h3>Темы общения</h3>
+        <canvas id="barChart"></canvas>
+      </div>
+
+      <div class="panel">
+        <h3>Цветовые маркеры состояния</h3>
+        <div class="legend">
+          <div class="lg"><span class="dot ok"></span>Зелёный — стабильно</div>
+          <div class="lg"><span class="dot warn"></span>Жёлтый — зона внимания</div>
+          <div class="lg"><span class="dot bad"></span>Красный — риск/эскалация</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Выводы за сегодня</h3>
+        <ul>
+          <li>✅ Улучшилось: контакт и качество диалога.</li>
+          <li>⚠️ Просадка: к вечеру растёт утомляемость.</li>
+          <li>📋 Завтра: короткий check‑in + 1 достижимая задача.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🌙 Вечерняя сводка</h3>
+      <div class="summary">
+        <div class="item">📞 Контакт: 65 мин</div>
+        <div class="item">📈 Динамика: ровная</div>
+        <div class="item">💬 Темы: учёба, планы</div>
+        <div class="item">⚠️ Риск: средний</div>
+        <div class="item">📋 План: мягкая структура дня</div>
       </div>
     </div>
   </section>
@@ -74,35 +133,25 @@
 
   <section id="entries" class="view hide card">
     <h3>Лента записей</h3>
-    <div class="entry"><b>18.03.2026</b> — Контакт 65 мин, настроение 5/10, фокус на поддержке, план на завтра: check-in + микроцель.</div>
-    <div class="entry"><b>17.03.2026</b> — Эпизодический контакт, фон ровный, без эскалации.</div>
-    <div class="entry"><b>16.03.2026</b> — Нужна поддержка режима сна и мягкая структура дня.</div>
-  </section>
-
-  <section class="card">
-    <h3>🌙 Вечерняя сводка (авто)</h3>
-    <ul>
-      <li>📞 Контакт: был, 65 мин</li>
-      <li>📈 Динамика: умеренно стабильная</li>
-      <li>💬 Темы: учёба, планы, бытовые задачи</li>
-      <li>⚠️ Риски: средний уровень (переутомление)</li>
-      <li>📋 План: без давления, короткие шаги</li>
-    </ul>
+    <div class="entry"><b>18.03.2026</b> — Контакт 65 мин, настроение 5/10, без эскалации, план: короткие шаги.</div>
+    <div class="entry"><b>17.03.2026</b> — Эпизодический контакт, фон ровный.</div>
+    <div class="entry"><b>16.03.2026</b> — Нужна поддержка режима сна.</div>
   </section>
 </div>
+
 <script>
 const tabs=[...document.querySelectorAll('.tab')];
 const views=[...document.querySelectorAll('.view')];
 tabs.forEach(t=>t.onclick=()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');views.forEach(v=>v.classList.add('hide'));document.getElementById(t.dataset.tab).classList.remove('hide');});
 
-new Chart(document.getElementById('lineChart'),{type:'line',data:{labels:['12.03','13.03','14.03','15.03','16.03','17.03','18.03'],datasets:[{label:'Настроение',data:[4,5,6,5,5,5,6],borderColor:'#2563eb',tension:.3},{label:'Тревожность',data:[6,5,4,5,5,4,4],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{display:true}}}});
-new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['Школа','Спорт','Игры','Планы','Хобби','Страхи'],datasets:[{label:'Частота',data:[2,1,2,1,1,1],backgroundColor:'#60a5fa'}]}});
+new Chart(document.getElementById('lineChart'),{type:'line',data:{labels:['12.03','13.03','14.03','15.03','16.03','17.03','18.03'],datasets:[{label:'Настроение',data:[4,5,6,5,5,5,6],borderColor:'#2563eb',tension:.35,pointRadius:3},{label:'Тревожность',data:[6,5,4,5,5,4,4],borderColor:'#f59e0b',tension:.35,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true}},scales:{y:{min:0,max:10}}}});
+new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['Школа','Спорт','Игры','Планы','Хобби','Страхи'],datasets:[{label:'Частота',data:[2,1,2,1,1,1],backgroundColor:['#60a5fa','#22c55e','#a78bfa','#f59e0b','#2dd4bf','#fb7185']}]},options:{responsive:true,maintainAspectRatio:false}});
+document.querySelectorAll('canvas').forEach(c=>c.parentElement.style.height='260px');
 
 const lv={10:1,11:2,12:1,13:2,14:1,15:1,16:2,17:1,18:2};
 const cal=document.getElementById('cal');
 for(let i=1;i<=31;i++){
-  const d=document.createElement('div');
-  d.className='d '+(lv[i]?('lvl'+lv[i]):'');
+  const d=document.createElement('div'); d.className='d '+(lv[i]?('lvl'+lv[i]):'');
   d.innerHTML=`<b>${i}</b><br><span class='muted'>${lv[i]?('уровень '+lv[i]):'—'}</span>`;
   cal.appendChild(d);
 }
