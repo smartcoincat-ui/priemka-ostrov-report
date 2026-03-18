@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📔 Дневник взаимодействия</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{--bg:#f4f7fb;--card:#fff;--text:#111827;--muted:#667085;--line:#dce4f0;--accent:#2563eb}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:18px auto;padding:0 12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .muted{color:var(--muted)} .btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer}
+    .tabs{display:flex;gap:8px;margin:10px 0}.tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff}
+    .tab.active{background:#eaf1ff;border-color:#b8ccff;color:#1d4ed8;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+    .kpi{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+    .hide{display:none}
+    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+    .d{min-height:66px;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:12px}
+    .lvl1{background:#ecfdf3}.lvl2{background:#fff7e8}.lvl3{background:#fff1f2}
+    .entry{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
+    h1,h2,h3{margin:.2em 0}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <section class="card top">
+    <div>
+      <h1>📔 Дневник взаимодействия</h1>
+      <div class="muted">Ребёнок • интерактивный формат: дашборд, календарь, записи, сводка</div>
+    </div>
+    <button class="btn">+ Запись</button>
+  </section>
+
+  <div class="tabs card" style="padding:8px">
+    <button class="tab active" data-tab="dashboard">Дашборд</button>
+    <button class="tab" data-tab="calendar">Календарь</button>
+    <button class="tab" data-tab="entries">Записи</button>
+  </div>
+
+  <section id="dashboard" class="view">
+    <div class="grid card">
+      <div class="kpi"><div class="muted">Эмоц. стабильность</div><h2 id="kpiStable">6.1</h2></div>
+      <div class="kpi"><div class="muted">Контактность</div><h2 id="kpiContact">86%</h2></div>
+      <div class="kpi"><div class="muted">Вовлечённость</div><h2 id="kpiInvolve">5.5</h2></div>
+      <div class="kpi"><div class="muted">Уровень риска</div><h2 id="kpiRisk">Средний</h2></div>
+    </div>
+    <div class="grid card">
+      <div><h3>Динамика за 7 дней</h3><canvas id="lineChart"></canvas></div>
+      <div><h3>Темы общения</h3><canvas id="barChart"></canvas></div>
+    </div>
+    <div class="grid card">
+      <div>
+        <h3>✅ Что улучшилось</h3>
+        <ul><li>Настроение стало ровнее</li><li>Контакт длился дольше обычного</li></ul>
+      </div>
+      <div>
+        <h3>⚠️ Где просадка</h3>
+        <ul><li>Утомляемость к вечеру</li></ul>
+      </div>
+      <div>
+        <h3>📋 Что важно завтра</h3>
+        <ul><li>Короткий check-in утром</li><li>1 микро-цель по учёбе</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="calendar" class="view hide card">
+    <h3>Календарь наблюдений (март 2026)</h3>
+    <div class="calendar" id="cal"></div>
+  </section>
+
+  <section id="entries" class="view hide card">
+    <h3>Лента записей</h3>
+    <div class="entry"><b>18.03.2026</b> — Контакт 65 мин, настроение 5/10, фокус на поддержке, план на завтра: check-in + микроцель.</div>
+    <div class="entry"><b>17.03.2026</b> — Эпизодический контакт, фон ровный, без эскалации.</div>
+    <div class="entry"><b>16.03.2026</b> — Нужна поддержка режима сна и мягкая структура дня.</div>
+  </section>
+
+  <section class="card">
+    <h3>🌙 Вечерняя сводка (авто)</h3>
+    <ul>
+      <li>📞 Контакт: был, 65 мин</li>
+      <li>📈 Динамика: умеренно стабильная</li>
+      <li>💬 Темы: учёба, планы, бытовые задачи</li>
+      <li>⚠️ Риски: средний уровень (переутомление)</li>
+      <li>📋 План: без давления, короткие шаги</li>
+    </ul>
+  </section>
+</div>
+<script>
+const tabs=[...document.querySelectorAll('.tab')];
+const views=[...document.querySelectorAll('.view')];
+tabs.forEach(t=>t.onclick=()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');views.forEach(v=>v.classList.add('hide'));document.getElementById(t.dataset.tab).classList.remove('hide');});
+
+new Chart(document.getElementById('lineChart'),{type:'line',data:{labels:['12.03','13.03','14.03','15.03','16.03','17.03','18.03'],datasets:[{label:'Настроение',data:[4,5,6,5,5,5,6],borderColor:'#2563eb',tension:.3},{label:'Тревожность',data:[6,5,4,5,5,4,4],borderColor:'#f59e0b',tension:.3}]},options:{plugins:{legend:{display:true}}}});
+new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['Школа','Спорт','Игры','Планы','Хобби','Страхи'],datasets:[{label:'Частота',data:[2,1,2,1,1,1],backgroundColor:'#60a5fa'}]}});
+
+const lv={10:1,11:2,12:1,13:2,14:1,15:1,16:2,17:1,18:2};
+const cal=document.getElementById('cal');
+for(let i=1;i<=31;i++){
+  const d=document.createElement('div');
+  d.className='d '+(lv[i]?('lvl'+lv[i]):'');
+  d.innerHTML=`<b>${i}</b><br><span class='muted'>${lv[i]?('уровень '+lv[i]):'—'}</span>`;
+  cal.appendChild(d);
+}
+</script>
+</body>
+</html>
