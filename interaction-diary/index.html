@@ -3,203 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>📔 Дневник взаимодействия</title>
+  <title>FOX • Live Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root{
-      --bg:#f3f6fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe4f0;
-      --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--accent:#2563eb;--violet:#7c3aed;
-      --fontScale:1;
+      --bg:#070b14;--bg2:#0d1424;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.14);
+      --text:#eaf1ff;--muted:#a7b6d4;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--acc:#5ea2ff;
     }
-    html[data-theme='dark']{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#94a3b8;--line:#233147;--accent:#60a5fa}
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--text);font-size:calc(16px * var(--fontScale))}
-    .wrap{max-width:1220px;margin:16px auto;padding:0 12px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 6px 24px rgba(15,23,42,.05)}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    body{margin:0;color:var(--text);font-family:Inter,system-ui,Arial;background:radial-gradient(1200px 700px at 20% 10%,#1a2a4b 0%,transparent 60%),radial-gradient(900px 500px at 90% 80%,#1b2a39 0%,transparent 60%),linear-gradient(120deg,var(--bg),var(--bg2));min-height:100vh;overflow-x:hidden}
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(circle at center,black 35%,transparent 85%);pointer-events:none}
+    .wrap{max-width:1280px;margin:16px auto;padding:0 12px;position:relative;z-index:2}
+    .glass{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .top{padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .title{font-size:clamp(20px,2.8vw,34px);font-weight:900;letter-spacing:.3px}
+    .subtitle{color:var(--muted)}
+    .chip{display:inline-flex;align-items:center;gap:6px;background:rgba(94,162,255,.15);border:1px solid rgba(94,162,255,.35);padding:5px 10px;border-radius:999px;font-size:12px}
+
+    .layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;margin-top:10px}
+    .card{padding:12px}
+    .kpi{grid-column:span 3;transform-style:preserve-3d;transition:.25s ease}
+    .kpi:hover{transform:translateY(-2px) rotateX(2deg) rotateY(-2deg)}
+    .kpi .v{font-size:30px;font-weight:900;margin-top:6px}
     .muted{color:var(--muted)}
-    .btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:8px 12px;cursor:pointer;font-weight:600}
-    .tabs{display:flex;gap:8px;overflow:auto}
-    .tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;white-space:nowrap}
-    .tab.active{background:#eaf1ff;border-color:#b8ccff;color:#1d4ed8;font-weight:700}
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
-    .kpi{grid-column:span 3;border:1px solid var(--line);border-radius:14px;padding:10px;background:#fff;position:relative;overflow:hidden}
-    .kpi::after{content:"";position:absolute;right:-22px;top:-22px;width:84px;height:84px;border-radius:50%;background:color-mix(in srgb,var(--accent),transparent 85%)}
-    .kpi .v{font-size:26px;font-weight:800;margin-top:4px}
-    .status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
-    .ok{background:#eafaf0;color:#166534}.warn{background:#fff6e8;color:#92400e}.bad{background:#ffeaea;color:#991b1b}
-    .dot{width:8px;height:8px;border-radius:50%}
-    .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.bad{background:var(--bad)}
-    .panel{grid-column:span 6}
-    .hide{display:none}
-    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .lg{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-    .calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-    .d{min-height:74px;border:1px solid var(--line);border-radius:10px;padding:6px;font-size:12px;background:#fff}
-    .lvl1{background:#ecfdf3}.lvl2{background:#fff7e8}.lvl3{background:#fff1f2}
-    .entry{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;background:#fff}
-    .summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-    .summary .item{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff}
+    .status{font-size:12px;border-radius:999px;padding:3px 9px;display:inline-block;margin-top:6px}
+    .ok{background:rgba(34,197,94,.18);color:#9effc2}.warn{background:rgba(245,158,11,.2);color:#ffd89b}.bad{background:rgba(239,68,68,.22);color:#ffb5b5}
 
-    .ring-wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-    .ring-card{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}
-    .ring{width:92px;height:92px;margin:0 auto 8px auto;position:relative}
-    .ring svg{transform:rotate(-90deg)}
-    .ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800}
+    .span6{grid-column:span 6}.span12{grid-column:span 12}.span4{grid-column:span 4}.span8{grid-column:span 8}
+    .list{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+    .row{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03)}
+    .row small{color:var(--muted)}
 
-    .progress{height:10px;background:var(--line);border-radius:999px;overflow:hidden;margin-top:4px}
-    .progress > span{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,var(--accent),var(--violet));animation:grow 1s ease}
+    .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:4px}
+    .bar > span{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,#58a6ff,#7c3aed);animation:grow 1.2s ease}
     @keyframes grow{from{width:0}to{width:var(--w)}}
 
-    .settings{position:fixed;right:14px;bottom:14px;z-index:30}
-    .settings-panel{position:fixed;right:14px;bottom:64px;z-index:35;min-width:260px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;box-shadow:0 10px 30px rgba(0,0,0,.18)}
-    .settings-panel.hide{display:none}
-    .settings-panel label{display:block;font-size:13px;color:var(--muted);margin:8px 0 4px}
-    .settings-panel select{width:100%;padding:8px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text)}
+    .pulse{position:relative}
+    .pulse:after{content:"";position:absolute;inset:-1px;border-radius:16px;box-shadow:0 0 0 0 rgba(94,162,255,.35);animation:pulse 2s infinite}
+    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,162,255,.35)}70%{box-shadow:0 0 0 14px rgba(94,162,255,0)}100%{box-shadow:0 0 0 0 rgba(94,162,255,0)}}
 
-    h1{font-size:clamp(20px,2.8vw,32px)} h2{font-size:clamp(18px,2.2vw,26px)} h3{font-size:clamp(16px,1.8vw,20px)}
-    @media (max-width: 980px){
-      .kpi{grid-column:span 6}
-      .panel{grid-column:span 12}
-      .summary{grid-template-columns:1fr}
-      .ring-wrap{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-    @media (max-width: 520px){
-      .kpi,.panel{grid-column:span 12}
-      .wrap{padding:0 8px}
-      .card{padding:10px}
-      body{font-size:calc(14px * var(--fontScale))}
-      .tabs{gap:6px}
-      .tab{padding:7px 10px;font-size:13px}
-      .btn{padding:7px 10px;font-size:13px}
-      .ring{width:80px;height:80px}
-    }
+    canvas{max-height:280px}
+    .clock{font-size:14px;color:#c7d7ff;font-weight:700}
+
+    @media(max-width:980px){.kpi{grid-column:span 6}.span6,.span8,.span4{grid-column:span 12}}
+    @media(max-width:560px){.kpi{grid-column:span 12}}
   </style>
 </head>
 <body>
+<div class="grid-bg"></div>
 <div class="wrap">
-  <section class="card top">
+  <section class="glass top">
     <div>
-      <h1 style="margin:.2em 0">📔 Дневник взаимодействия</h1>
-      <div class="muted">Профессиональный дашборд с анимированной инфографикой и мобильной адаптацией</div>
+      <div class="title">🦊 FOX • LIVE Dashboard</div>
+      <div class="subtitle">Визуализация текущих задач, семейных процессов и тех.состояния в реальном времени</div>
     </div>
-    <button class="btn">+ Запись</button>
+    <div>
+      <div class="chip">🟢 ONLINE</div>
+      <div class="clock" id="clock"></div>
+    </div>
   </section>
 
-  <section class="card tabs">
-    <button class="tab active" data-tab="dashboard">Дашборд</button>
-    <button class="tab" data-tab="calendar">Календарь</button>
-    <button class="tab" data-tab="entries">Записи</button>
-  </section>
+  <section class="layout">
+    <div class="glass card kpi"><div class="muted">Активные задачи</div><div class="v" id="activeCount">6</div><span class="status warn">В работе</span></div>
+    <div class="glass card kpi"><div class="muted">Выполнено сегодня</div><div class="v" id="doneCount">14</div><span class="status ok">Отлично</span></div>
+    <div class="glass card kpi"><div class="muted">Семейные поручения</div><div class="v">4</div><span class="status warn">Контроль</span></div>
+    <div class="glass card kpi"><div class="muted">Риск-уровень</div><div class="v">Средний</div><span class="status warn">Без эскалации</span></div>
 
-  <section id="dashboard" class="view">
-    <div class="grid card">
-      <div class="kpi"><div class="muted">Эмоц. стабильность</div><div class="v">6.4</div><span class="status warn"><span class="dot warn"></span>Нужен контроль</span></div>
-      <div class="kpi"><div class="muted">Контактность</div><div class="v">89%</div><span class="status ok"><span class="dot ok"></span>Хорошо</span></div>
-      <div class="kpi"><div class="muted">Вовлечённость</div><div class="v">5.9</div><span class="status warn"><span class="dot warn"></span>Средне</span></div>
-      <div class="kpi"><div class="muted">Уровень риска</div><div class="v">Средний</div><span class="status warn"><span class="dot warn"></span>Без эскалации</span></div>
+    <div class="glass card span8 pulse">
+      <h3 style="margin:.2em 0">📊 Текущие процессы</h3>
+      <canvas id="line"></canvas>
+    </div>
+    <div class="glass card span4">
+      <h3 style="margin:.2em 0">⚙️ Тех. метрики</h3>
+      <div class="muted">Пульс системы</div><div class="bar"><span style="--w:84%"></span></div>
+      <div class="muted" style="margin-top:8px">Синхронизация данных</div><div class="bar"><span style="--w:91%"></span></div>
+      <div class="muted" style="margin-top:8px">Очередь задач</div><div class="bar"><span style="--w:63%"></span></div>
+      <div class="muted" style="margin-top:8px">Доступность сервисов</div><div class="bar"><span style="--w:96%"></span></div>
     </div>
 
-    <div class="card">
-      <h3>📊 Инфографика ключевых показателей</h3>
-      <div class="ring-wrap">
-        <div class="ring-card"><div class="ring" data-p="64" data-c="#2563eb"></div><div>Эмоц. стабильность</div></div>
-        <div class="ring-card"><div class="ring" data-p="89" data-c="#22c55e"></div><div>Контактность</div></div>
-        <div class="ring-card"><div class="ring" data-p="59" data-c="#7c3aed"></div><div>Вовлечённость</div></div>
-        <div class="ring-card"><div class="ring" data-p="48" data-c="#f59e0b"></div><div>Риск (чем ниже, тем лучше)</div></div>
-      </div>
+    <div class="glass card span6">
+      <h3 style="margin:.2em 0">🧭 Текущие задачи (live)</h3>
+      <div class="list" id="activeList"></div>
     </div>
 
-    <div class="grid card">
-      <div class="panel"><h3>Динамика за 7 дней</h3><canvas id="lineChart"></canvas></div>
-      <div class="panel"><h3>Темы общения</h3><canvas id="barChart"></canvas></div>
+    <div class="glass card span6">
+      <h3 style="margin:.2em 0">✅ Выполненные задачи</h3>
+      <div class="list" id="doneList"></div>
     </div>
 
-    <div class="grid card">
-      <div class="panel">
-        <h3>🎯 Расширенные индикаторы</h3>
-        <div class="muted">Качество сна</div><div class="progress"><span style="--w:72%"></span></div>
-        <div class="muted">Стрессоустойчивость</div><div class="progress"><span style="--w:61%"></span></div>
-        <div class="muted">Учебный фокус</div><div class="progress"><span style="--w:58%"></span></div>
-        <div class="muted">Социальный комфорт</div><div class="progress"><span style="--w:76%"></span></div>
-      </div>
-      <div class="panel">
-        <h3>🧠 Выводы за сегодня</h3>
-        <ul>
-          <li>✅ Улучшилось: контакт и качество диалога.</li>
-          <li>⚠️ Просадка: к вечеру растёт утомляемость.</li>
-          <li>📋 Завтра: короткий check‑in + 1 достижимая задача.</li>
-          <li>🛟 Тактика: без давления, короткие блоки, поддержка.</li>
-        </ul>
-        <div class="legend">
-          <div class="lg"><span class="dot ok"></span>Зелёный — стабильно</div>
-          <div class="lg"><span class="dot warn"></span>Жёлтый — зона внимания</div>
-          <div class="lg"><span class="dot bad"></span>Красный — риск</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>🌙 Вечерняя сводка</h3>
-      <div class="summary">
-        <div class="item">📞 Контакт: 65 мин</div>
-        <div class="item">📈 Динамика: ровная</div>
-        <div class="item">💬 Темы: учёба, планы</div>
-        <div class="item">⚠️ Риск: средний</div>
-        <div class="item">📋 План: мягкая структура дня</div>
+    <div class="glass card span12">
+      <h3 style="margin:.2em 0">👨‍👩‍👧‍👦 Семейные ключевые данные</h3>
+      <div class="list">
+        <div class="row"><span>❄️ Кондиционеры (Новиков)</span><small>Нужно отправить фото точек монтажа на email</small></div>
+        <div class="row"><span>🚕 Учёт водителя</span><small>Аванс 2000 ₽ • 250 ₽/поездка • ведётся остаток</small></div>
+        <div class="row"><span>💙 Анастасия Васильевна</span><small>Отправлено голосовое о самочувствии и восстановлении руки</small></div>
+        <div class="row"><span>📔 Дневник взаимодействия</span><small>Онлайн-дашборд обновлён, мобильная версия активна</small></div>
       </div>
     </div>
   </section>
-
-  <section id="calendar" class="view hide card">
-    <h3>Календарь наблюдений (март 2026)</h3>
-    <div class="calendar" id="cal"></div>
-  </section>
-
-  <section id="entries" class="view hide card">
-    <h3>Лента записей</h3>
-    <div class="entry"><b>18.03.2026</b> — Контакт 65 мин, настроение 5/10, без эскалации, план: короткие шаги.</div>
-    <div class="entry"><b>17.03.2026</b> — Эпизодический контакт, фон ровный.</div>
-    <div class="entry"><b>16.03.2026</b> — Нужна поддержка режима сна.</div>
-  </section>
-</div>
-
-<div class="settings"><button class="btn" id="settingsBtn">⚙️ Настройки</button></div>
-<div class="settings-panel hide" id="settingsPanel">
-  <label for="themeSelect">Тема</label>
-  <select id="themeSelect"><option value="auto">Авто (система)</option><option value="light">Светлая</option><option value="dark">Тёмная</option></select>
-  <label for="fontSelect">Размер шрифта</label>
-  <select id="fontSelect"><option value="0.92">Компактный</option><option value="1" selected>Стандарт</option><option value="1.08">Крупнее</option></select>
 </div>
 
 <script>
-const tabs=[...document.querySelectorAll('.tab')], views=[...document.querySelectorAll('.view')];
-tabs.forEach(t=>t.onclick=()=>{tabs.forEach(x=>x.classList.remove('active'));t.classList.add('active');views.forEach(v=>v.classList.add('hide'));document.getElementById(t.dataset.tab).classList.remove('hide');});
+const active=[
+  ['Мониторинг ответа Даши','ожидание'],
+  ['Matrix RTC transport (Element X)','план V2'],
+  ['Подготовка фото для Новикова','в работе'],
+  ['Контроль поездки А.В. на завтра','запланировано'],
+  ['Учёт водителя (баланс)','активно'],
+  ['Семейный live-дашборд V2','в разработке']
+];
+const done=[
+  ['Обновлён онлайн-дневник взаимодействия','готово'],
+  ['Создан дневник дня Яна','готово'],
+  ['Налажена авторизация Matrix','готово'],
+  ['Настроен голос FOX (SAG)','готово'],
+  ['Отправлены инструкции по входу','готово']
+];
 
-new Chart(document.getElementById('lineChart'),{type:'line',data:{labels:['12.03','13.03','14.03','15.03','16.03','17.03','18.03'],datasets:[{label:'Настроение',data:[4,5,6,5,5,5,6],borderColor:'#2563eb',tension:.35,pointRadius:3},{label:'Тревожность',data:[6,5,4,5,5,4,4],borderColor:'#f59e0b',tension:.35,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{min:0,max:10}}}});
-new Chart(document.getElementById('barChart'),{type:'bar',data:{labels:['Школа','Спорт','Игры','Планы','Хобби','Страхи'],datasets:[{label:'Частота',data:[2,1,2,1,1,1],backgroundColor:['#60a5fa','#22c55e','#a78bfa','#f59e0b','#2dd4bf','#fb7185']}]},options:{responsive:true,maintainAspectRatio:false}});
-document.querySelectorAll('canvas').forEach(c=>c.parentElement.style.height='260px');
+const al=document.getElementById('activeList');
+active.forEach(x=>{const d=document.createElement('div');d.className='row';d.innerHTML=`<span>• ${x[0]}</span><small>${x[1]}</small>`;al.appendChild(d)});
+const dl=document.getElementById('doneList');
+done.forEach(x=>{const d=document.createElement('div');d.className='row';d.innerHTML=`<span>• ${x[0]}</span><small>${x[1]}</small>`;dl.appendChild(d)});
 
-const lv={10:1,11:2,12:1,13:2,14:1,15:1,16:2,17:1,18:2};
-const cal=document.getElementById('cal');
-for(let i=1;i<=31;i++){const d=document.createElement('div');d.className='d '+(lv[i]?('lvl'+lv[i]):'');d.innerHTML=`<b>${i}</b><br><span class='muted'>${lv[i]?('уровень '+lv[i]):'—'}</span>`;cal.appendChild(d);}
+new Chart(document.getElementById('line'),{
+  type:'line',
+  data:{labels:['09:00','10:00','11:00','12:00','13:00','14:00'],datasets:[
+    {label:'Активные задачи',data:[4,5,6,5,6,6],borderColor:'#5ea2ff',tension:.35},
+    {label:'Выполненные',data:[3,6,8,10,12,14],borderColor:'#22c55e',tension:.35}
+  ]},
+  options:{plugins:{legend:{labels:{color:'#cfe0ff'}}},scales:{x:{ticks:{color:'#a7b6d4'}},y:{ticks:{color:'#a7b6d4'}}}}
+});
 
-function renderRing(el){
-  const p=+el.dataset.p, c=el.dataset.c, r=38, circ=2*Math.PI*r, off=circ-(p/100)*circ;
-  el.innerHTML=`<svg width="92" height="92"><circle cx="46" cy="46" r="${r}" stroke="#e5e7eb" stroke-width="8" fill="none"/><circle cx="46" cy="46" r="${r}" stroke="${c}" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${circ}"/></svg><div class='num'>${p}%</div>`;
-  const fg=el.querySelectorAll('circle')[1];
-  requestAnimationFrame(()=>{fg.style.transition='stroke-dashoffset 1s ease'; fg.style.strokeDashoffset=off;});
+function tick(){
+  const d=new Date();
+  document.getElementById('clock').textContent='🕒 '+d.toLocaleString('ru-RU');
 }
-document.querySelectorAll('.ring').forEach(renderRing);
-
-const settingsBtn=document.getElementById('settingsBtn'), settingsPanel=document.getElementById('settingsPanel');
-const themeSelect=document.getElementById('themeSelect'), fontSelect=document.getElementById('fontSelect');
-settingsBtn.onclick=()=>settingsPanel.classList.toggle('hide');
-const savedTheme=localStorage.getItem('diaryTheme')||'auto', savedScale=localStorage.getItem('diaryScale')||'1';
-themeSelect.value=savedTheme; fontSelect.value=savedScale; applyTheme(savedTheme); document.documentElement.style.setProperty('--fontScale',savedScale);
-themeSelect.onchange=e=>{localStorage.setItem('diaryTheme',e.target.value);applyTheme(e.target.value)};
-fontSelect.onchange=e=>{localStorage.setItem('diaryScale',e.target.value);document.documentElement.style.setProperty('--fontScale',e.target.value)};
-function applyTheme(mode){if(mode==='auto'){const dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=dark?'dark':'light';}else document.documentElement.dataset.theme=mode;}
+tick(); setInterval(tick,1000);
 </script>
 </body>
 </html>
