@@ -3,152 +3,177 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FOX • Live Dashboard</title>
+  <title>LEGAT • Demo Dossier (Fictional)</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root{
-      --bg:#070b14;--bg2:#0d1424;--card:rgba(255,255,255,.06);--line:rgba(255,255,255,.14);
-      --text:#eaf1ff;--muted:#a7b6d4;--ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--acc:#5ea2ff;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;color:var(--text);font-family:Inter,system-ui,Arial;background:radial-gradient(1200px 700px at 20% 10%,#1a2a4b 0%,transparent 60%),radial-gradient(900px 500px at 90% 80%,#1b2a39 0%,transparent 60%),linear-gradient(120deg,var(--bg),var(--bg2));min-height:100vh;overflow-x:hidden}
-    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:28px 28px;mask-image:radial-gradient(circle at center,black 35%,transparent 85%);pointer-events:none}
-    .wrap{max-width:1280px;margin:16px auto;padding:0 12px;position:relative;z-index:2}
-    .glass{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-    .top{padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .title{font-size:clamp(20px,2.8vw,34px);font-weight:900;letter-spacing:.3px}
-    .subtitle{color:var(--muted)}
-    .chip{display:inline-flex;align-items:center;gap:6px;background:rgba(94,162,255,.15);border:1px solid rgba(94,162,255,.35);padding:5px 10px;border-radius:999px;font-size:12px}
-
-    .layout{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:10px;margin-top:10px}
-    .card{padding:12px}
-    .kpi{grid-column:span 3;transform-style:preserve-3d;transition:.25s ease}
-    .kpi:hover{transform:translateY(-2px) rotateX(2deg) rotateY(-2deg)}
-    .kpi .v{font-size:30px;font-weight:900;margin-top:6px}
-    .muted{color:var(--muted)}
-    .status{font-size:12px;border-radius:999px;padding:3px 9px;display:inline-block;margin-top:6px}
-    .ok{background:rgba(34,197,94,.18);color:#9effc2}.warn{background:rgba(245,158,11,.2);color:#ffd89b}.bad{background:rgba(239,68,68,.22);color:#ffb5b5}
-
-    .span6{grid-column:span 6}.span12{grid-column:span 12}.span4{grid-column:span 4}.span8{grid-column:span 8}
-    .list{display:flex;flex-direction:column;gap:7px;margin-top:8px}
-    .row{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03)}
-    .row small{color:var(--muted)}
-
-    .bar{height:9px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:4px}
-    .bar > span{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,#58a6ff,#7c3aed);animation:grow 1.2s ease}
-    @keyframes grow{from{width:0}to{width:var(--w)}}
-
-    .pulse{position:relative}
-    .pulse:after{content:"";position:absolute;inset:-1px;border-radius:16px;box-shadow:0 0 0 0 rgba(94,162,255,.35);animation:pulse 2s infinite}
-    @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,162,255,.35)}70%{box-shadow:0 0 0 14px rgba(94,162,255,0)}100%{box-shadow:0 0 0 0 rgba(94,162,255,0)}}
-
-    canvas{max-height:280px}
-    .clock{font-size:14px;color:#c7d7ff;font-weight:700}
-
-    @media(max-width:980px){.kpi{grid-column:span 6}.span6,.span8,.span4{grid-column:span 12}}
-    @media(max-width:560px){.kpi{grid-column:span 12}}
+    :root{--bg:#0a0f1e;--card:#131a2b;--line:#26314f;--txt:#edf2ff;--muted:#9ba9cc;--a:#4ea1ff;--ok:#26c281;--w:#ffb020;--r:#ff5d73}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(1000px 500px at 20% -10%,#1f2d57 0%,transparent 70%),var(--bg);color:var(--txt);font:14px/1.4 Inter,system-ui,Segoe UI,Arial}
+    .wrap{max-width:1280px;margin:20px auto;padding:0 14px}
+    .top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+    .badge{padding:6px 10px;border:1px solid #3d4f80;background:#18233e;border-radius:999px;color:#cfe0ff}
+    .warn{background:#3a3019;border-color:#725a1a;color:#ffd68a}
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:12px}
+    .card{background:linear-gradient(180deg,#141c31,#11182a);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .photo{width:100%;aspect-ratio:1/1;border-radius:12px;border:1px solid #33436e;background:#0f1528 center/cover no-repeat;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="%23263a74"/><stop offset="1" stop-color="%23172645"/></linearGradient></defs><rect width="100%" height="100%" fill="url(%23g)"/><circle cx="300" cy="215" r="85" fill="%23d2dbef"/><rect x="165" y="320" width="270" height="190" rx="95" fill="%23d2dbef"/><text x="300" y="560" text-anchor="middle" fill="%23eaf0ff" font-family="Arial" font-size="26">Fictional portrait</text></svg>')}
+    .h1{font-weight:900;font-size:24px}
+    .sub{color:var(--muted)}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+    .chip{padding:4px 8px;border-radius:999px;border:1px solid #3e4a6d;background:#19223d;color:#d9e6ff;font-size:12px}
+    .kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+    .kpi .card{padding:10px}
+    .num{font-size:28px;font-weight:900}
+    .ok{color:var(--ok)} .w{color:var(--w)} .r{color:var(--r)}
+    .tools{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+    button,select,input{background:#0f1629;border:1px solid #344468;color:#e5edff;border-radius:10px;padding:8px 10px}
+    button{cursor:pointer}
+    .table{max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:12px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #27334f;text-align:left;vertical-align:top}
+    th{position:sticky;top:0;background:#151e34;z-index:1}
+    .risk-low{color:#6ee7b7}.risk-med{color:#ffd27f}.risk-high{color:#ff9bac}
+    .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .note{font-size:12px;color:#aebbe0}
+    @media (max-width:980px){.grid{grid-template-columns:1fr}.kpi{grid-template-columns:repeat(2,minmax(0,1fr))}.cols{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-<div class="grid-bg"></div>
 <div class="wrap">
-  <section class="glass top">
+  <div class="top">
     <div>
-      <div class="title">🦊 FOX • LIVE Dashboard</div>
-      <div class="subtitle">Визуализация текущих задач, семейных процессов и тех.состояния в реальном времени</div>
+      <div class="h1">LEGAT • Interactive Dossier Board</div>
+      <div class="sub">ДЕМО-СТРАНИЦА: полностью вымышленные данные для презентации интерфейса.</div>
     </div>
-    <div>
-      <div class="chip">🟢 ONLINE</div>
-      <div class="clock" id="clock"></div>
-    </div>
-  </section>
+    <div class="badge warn">⚠ Fictional demo only</div>
+  </div>
 
-  <section class="layout">
-    <div class="glass card kpi"><div class="muted">Активные задачи</div><div class="v" id="activeCount">6</div><span class="status warn">В работе</span></div>
-    <div class="glass card kpi"><div class="muted">Выполнено сегодня</div><div class="v" id="doneCount">14</div><span class="status ok">Отлично</span></div>
-    <div class="glass card kpi"><div class="muted">Семейные поручения</div><div class="v">4</div><span class="status warn">Контроль</span></div>
-    <div class="glass card kpi"><div class="muted">Риск-уровень</div><div class="v">Средний</div><span class="status warn">Без эскалации</span></div>
-
-    <div class="glass card span8 pulse">
-      <h3 style="margin:.2em 0">📊 Текущие процессы</h3>
-      <canvas id="line"></canvas>
-    </div>
-    <div class="glass card span4">
-      <h3 style="margin:.2em 0">⚙️ Тех. метрики</h3>
-      <div class="muted">Пульс системы</div><div class="bar"><span style="--w:84%"></span></div>
-      <div class="muted" style="margin-top:8px">Синхронизация данных</div><div class="bar"><span style="--w:91%"></span></div>
-      <div class="muted" style="margin-top:8px">Очередь задач</div><div class="bar"><span style="--w:63%"></span></div>
-      <div class="muted" style="margin-top:8px">Доступность сервисов</div><div class="bar"><span style="--w:96%"></span></div>
-    </div>
-
-    <div class="glass card span6">
-      <h3 style="margin:.2em 0">🧭 Текущие задачи (live)</h3>
-      <div class="list" id="activeList"></div>
-    </div>
-
-    <div class="glass card span6">
-      <h3 style="margin:.2em 0">✅ Выполненные задачи</h3>
-      <div class="list" id="doneList"></div>
-    </div>
-
-    <div class="glass card span12">
-      <h3 style="margin:.2em 0">👨‍👩‍👧‍👦 Семейные ключевые данные</h3>
-      <div class="list">
-        <div class="row"><span>❄️ Кондиционеры (Новиков)</span><small>Нужно отправить фото точек монтажа на email</small></div>
-        <div class="row"><span>🚕 Учёт водителя</span><small>Аванс 2000 ₽ • 250 ₽/поездка • ведётся остаток</small></div>
-        <div class="row"><span>💙 Анастасия Васильевна</span><small>Отправлено голосовое о самочувствии и восстановлении руки</small></div>
-        <div class="row"><span>📔 Дневник взаимодействия</span><small>Онлайн-дашборд обновлён, мобильная версия активна</small></div>
+  <div class="grid">
+    <aside class="card">
+      <div class="photo"></div>
+      <h2 style="margin:10px 0 2px">Илья Воронов</h2>
+      <div class="sub">Alias: «Север» • ID: LEGAT-DEMO-042</div>
+      <div class="chips">
+        <span class="chip">Роль: подозреваемый (вым.)</span>
+        <span class="chip">Регион: СЗФО</span>
+        <span class="chip">Статус: под наблюдением</span>
       </div>
-    </div>
+      <hr style="border:none;border-top:1px solid #2a3757;margin:12px 0">
+      <div><b>Ключевые маркеры:</b></div>
+      <ul class="sub">
+        <li>Высокая мобильность и частая смена SIM</li>
+        <li>Повторяющиеся контакты из группы риска</li>
+        <li>Умеренно-выраженная операционная дисциплина</li>
+      </ul>
+      <div class="note">*Текст аналитики ниже — демонстрационный и не относится к реальному лицу.</div>
+    </aside>
 
-    <div class="glass card span12">
-      <h3 style="margin:.2em 0">📝 Обновление за 18.03.2026 (сегодня)</h3>
-      <div class="list">
-        <div class="row"><span>💬 Общение с Дашей</span><small>инициирован поддерживающий диалог в мягком формате</small></div>
-        <div class="row"><span>📷 Медиа-запрос</span><small>по просьбе семьи отправлено Даше фото с аккуратным макияжем</small></div>
-        <div class="row"><span>🧭 Тон взаимодействия</span><small>дружелюбно, без давления, с уважением к границам</small></div>
-        <div class="row"><span>➡️ Дальше</span><small>ожидание ответа Даши и аккуратное продолжение диалога по контексту</small></div>
-      </div>
-    </div>
-  </section>
+    <main>
+      <section class="kpi">
+        <div class="card"><div class="sub">Событий</div><div class="num">128</div></div>
+        <div class="card"><div class="sub">Связи</div><div class="num">46</div></div>
+        <div class="card"><div class="sub">Риск</div><div class="num r">Высокий</div></div>
+        <div class="card"><div class="sub">Верифицировано</div><div class="num ok">71%</div></div>
+      </section>
+
+      <section class="card">
+        <div class="tools">
+          <input id="q" placeholder="Поиск по событиям/статьям/контактам" style="min-width:260px;flex:1"/>
+          <select id="risk"><option value="">Все уровни риска</option><option>low</option><option>medium</option><option>high</option></select>
+          <select id="block"><option value="">Все блоки</option><option>Криминальные эпизоды</option><option>Коммуникации</option><option>Финансы</option><option>Передвижения</option></select>
+          <button onclick="exportCSV()">Excel/CSV</button>
+          <button onclick="exportJSON()">JSON</button>
+          <button onclick="exportDOC()">Word</button>
+          <button onclick="window.print()">PDF/Печать</button>
+        </div>
+
+        <div class="cols">
+          <div class="card" style="padding:10px">
+            <h3 style="margin:0 0 8px">Риск-профиль по блокам</h3>
+            <canvas id="riskChart" height="180"></canvas>
+          </div>
+          <div class="card" style="padding:10px">
+            <h3 style="margin:0 0 8px">Динамика событий (12 мес.)</h3>
+            <canvas id="timelineChart" height="180"></canvas>
+          </div>
+        </div>
+
+        <h3 style="margin:12px 0 8px">События и фактура</h3>
+        <div class="table">
+          <table>
+            <thead><tr><th>Дата</th><th>Блок</th><th>Событие</th><th>Статья/маркер</th><th>Риск</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" style="margin-top:10px">
+        <h3 style="margin:0 0 8px">Аналитика и рекомендации (демо)</h3>
+        <ul>
+          <li><b>Предположение:</b> субъект опирается на короткие циклы контактов и избегает длинных стабильных цепочек.</li>
+          <li><b>Сильные стороны:</b> адаптивность, быстрые смены маршрутов, цифровая аккуратность.</li>
+          <li><b>Слабые стороны:</b> повторяемые временные окна, зависимость от 2–3 доверенных связей.</li>
+          <li><b>Рекомендации для мониторинга:</b> фокус на графе контактов, временных паттернах и финансовых микротранзакциях.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
 </div>
 
 <script>
-const active=[
-  ['Мониторинг ответа Даши','ожидание'],
-  ['Matrix RTC transport (Element X)','план V2'],
-  ['Подготовка фото для Новикова','в работе'],
-  ['Контроль поездки А.В. на завтра','запланировано'],
-  ['Учёт водителя (баланс)','активно'],
-  ['Семейный live-дашборд V2','в разработке']
-];
-const done=[
-  ['Обновлён онлайн-дневник взаимодействия','готово'],
-  ['Создан дневник дня Яна','готово'],
-  ['Налажена авторизация Matrix','готово'],
-  ['Настроен голос FOX (SAG)','готово'],
-  ['Отправлены инструкции по входу','готово']
+const data = [
+  {d:'2026-01-14',b:'Криминальные эпизоды',e:'Демонстрационный эпизод: незаконный оборот цифровых активов',a:'ст. 159.6 (вым.)',r:'high'},
+  {d:'2026-01-28',b:'Коммуникации',e:'Кластер коротких ночных звонков (7 узлов)',a:'Pattern COM-7',r:'medium'},
+  {d:'2026-02-03',b:'Финансы',e:'Серия микропереводов на 11 карт',a:'FIN-MICRO',r:'high'},
+  {d:'2026-02-17',b:'Передвижения',e:'Повторяемый маршрут «Север-2»',a:'MOVE-REPEAT',r:'medium'},
+  {d:'2026-03-01',b:'Криминальные эпизоды',e:'Демо фабула: сговор в организованной группе',a:'ст. 210 (вым.)',r:'high'},
+  {d:'2026-03-05',b:'Коммуникации',e:'Использование одноразовых SIM',a:'SIM-ROTATE',r:'low'},
+  {d:'2026-03-09',b:'Финансы',e:'Смена кошельков и обменников',a:'CRYPTO-HOP',r:'medium'},
+  {d:'2026-03-12',b:'Передвижения',e:'Паузы связи перед перемещением',a:'RADIO-SILENCE',r:'high'}
 ];
 
-const al=document.getElementById('activeList');
-active.forEach(x=>{const d=document.createElement('div');d.className='row';d.innerHTML=`<span>• ${x[0]}</span><small>${x[1]}</small>`;al.appendChild(d)});
-const dl=document.getElementById('doneList');
-done.forEach(x=>{const d=document.createElement('div');d.className='row';d.innerHTML=`<span>• ${x[0]}</span><small>${x[1]}</small>`;dl.appendChild(d)});
+const tbody = document.getElementById('tbody');
+const q = document.getElementById('q');
+const risk = document.getElementById('risk');
+const block = document.getElementById('block');
 
-new Chart(document.getElementById('line'),{
+function row(x){
+  const cls = x.r==='high'?'risk-high':x.r==='medium'?'risk-med':'risk-low';
+  return `<tr><td>${x.d}</td><td>${x.b}</td><td>${x.e}</td><td>${x.a}</td><td class="${cls}">${x.r}</td></tr>`;
+}
+function render(){
+  const qq=(q.value||'').toLowerCase().trim();
+  const rr=risk.value, bb=block.value;
+  const out=data.filter(x=>
+    (!rr||x.r===rr)&&(!bb||x.b===bb)&&(!qq||(`${x.d} ${x.b} ${x.e} ${x.a}`).toLowerCase().includes(qq))
+  );
+  tbody.innerHTML = out.map(row).join('') || '<tr><td colspan="5" class="sub">Ничего не найдено</td></tr>';
+  window.__filtered = out;
+}
+[q,risk,block].forEach(el=>el.addEventListener('input',render));
+render();
+
+new Chart(document.getElementById('riskChart'),{
+  type:'doughnut',
+  data:{labels:['low','medium','high'],datasets:[{data:[1,3,4],backgroundColor:['#26c281','#ffb020','#ff5d73']}]},
+  options:{plugins:{legend:{labels:{color:'#dfe8ff'}}}}
+});
+new Chart(document.getElementById('timelineChart'),{
   type:'line',
-  data:{labels:['09:00','10:00','11:00','12:00','13:00','14:00'],datasets:[
-    {label:'Активные задачи',data:[4,5,6,5,6,6],borderColor:'#5ea2ff',tension:.35},
-    {label:'Выполненные',data:[3,6,8,10,12,14],borderColor:'#22c55e',tension:.35}
-  ]},
-  options:{plugins:{legend:{labels:{color:'#cfe0ff'}}},scales:{x:{ticks:{color:'#a7b6d4'}},y:{ticks:{color:'#a7b6d4'}}}}
+  data:{labels:['апр','май','июн','июл','авг','сен','окт','ноя','дек','янв','фев','мар'],datasets:[{label:'События',data:[3,4,5,8,7,9,6,10,8,11,12,14],borderColor:'#4ea1ff',tension:.35}]},
+  options:{plugins:{legend:{labels:{color:'#dfe8ff'}}},scales:{x:{ticks:{color:'#c7d4f5'}},y:{ticks:{color:'#c7d4f5'}}}}
 });
 
-function tick(){
-  const d=new Date();
-  document.getElementById('clock').textContent='🕒 '+d.toLocaleString('ru-RU');
+function exportCSV(){
+  const rows = (window.__filtered||data);
+  const head='date,block,event,article_marker,risk\n';
+  const body=rows.map(x=>`"${x.d}","${x.b}","${x.e.replaceAll('"','""')}","${x.a}","${x.r}"`).join('\n');
+  download('legat-demo.csv', head+body, 'text/csv;charset=utf-8');
 }
-tick(); setInterval(tick,1000);
+function exportJSON(){ download('legat-demo.json', JSON.stringify(window.__filtered||data,null,2), 'application/json'); }
+function exportDOC(){
+  const html = `<html><body><h2>LEGAT Demo Dossier (Fictional)</h2><pre>${JSON.stringify(window.__filtered||data,null,2)}</pre></body></html>`;
+  download('legat-demo.doc', html, 'application/msword');
+}
+function download(name,content,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name; a.click(); URL.revokeObjectURL(a.href); }
 </script>
 </body>
 </html>
